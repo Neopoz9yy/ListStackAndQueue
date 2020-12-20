@@ -5,7 +5,7 @@
 using namespace std;
 
 template <class ValType>
-class ListElem  {
+class ListElem {
 protected:
 	ValType list;
 	ListElem* next;
@@ -52,7 +52,7 @@ inline ListElem<ValType>* ListElem<ValType>::GetNext() {
 }
 
 template<class ValType>
-inline ListElem<ValType>* ListElem<ValType>::GetPrevious(){
+inline ListElem<ValType>* ListElem<ValType>::GetPrevious() {
 	return previous;
 }
 
@@ -67,7 +67,7 @@ inline void ListElem<ValType>::SetNext(ListElem<ValType>* next) {
 }
 
 template<class ValType>
-inline void ListElem<ValType>::SetPrevious(ListElem* previous){
+inline void ListElem<ValType>::SetPrevious(ListElem* previous) {
 	this->previous = previous;
 }
 
@@ -86,7 +86,7 @@ inline istream& operator>>(istream& istr, ListElem<ValType1>& v) {
 
 
 template<class ValType>
-class TList  {
+class TList {
 protected:
 	ListElem<ValType>* first;
 	ListElem<ValType>* last;
@@ -108,16 +108,89 @@ public:
 
 	ListElem<ValType>* GetFirst();
 	ListElem<ValType>* GetLast();
-
+	int GetLength() { return length; }
 	bool IsEmpty(void) const;
 	bool IsFull(void) const;
 	template <class ValType1>
 	friend ostream& operator<<(ostream& ostr, const TList<ValType1>& v);
 	template <class ValType1>
 	friend istream& operator>>(istream& istr, TList<ValType1>& v);
-
-	
+	void DelDenominator(ValType p);
+	void together(TList<ValType>& v);
+	void part(TList<ValType>& v);
 };
+template<class ValType>
+inline void TList<ValType>::DelDenominator(ValType p) {
+	ListElem<ValType>* temp = nullptr;
+	while (first != nullptr) {
+		temp = first->GetNext();
+		temp->SetPrevious(first);
+		if (temp->GetPrevious()->GetList() % p == 0) {
+			DelFirst();
+		}
+		else {
+			cout << *first << " ";
+			first = first->GetNext();
+		}
+
+	}
+}
+
+template<class ValType>
+inline void TList<ValType>::together(TList<ValType>& v) {
+	ListElem<ValType>* tmp = nullptr;
+	int temp = length + v.length;
+
+	for (int i = 0; i < length - 1; i++) {
+		tmp = first->GetNext();
+		tmp->SetPrevious(first);
+		tmp->GetPrevious()->GetList();
+		cout << *first << " ";
+		first = first->GetNext();
+	}
+
+	tmp = v.first;
+	tmp->SetPrevious(first);
+	tmp->GetPrevious()->GetList();
+	cout << *first << " ";
+	first = v.first;
+
+	for (int i = 0; i < v.length - 1; i++) {
+		tmp = v.first->GetNext();
+		tmp->SetPrevious(v.first);
+		tmp->GetPrevious()->GetList();
+		cout << *v.first << " ";
+		v.first = v.first->GetNext();
+	}
+	cout << *v.first << " ";
+}
+
+template<class ValType>
+void TList<ValType>::part(TList<ValType>& v) {
+	ListElem<ValType>* tmp = first;
+	ListElem<ValType>* temp = v.first;
+
+
+	tmp->SetNext(first->GetNext());
+
+	while (first != nullptr) {
+		while (first == v.first) {
+			first = first->GetNext();
+			v.first = v.first->GetNext();
+		}
+		if (v.first == nullptr)
+			cout << "yes";
+		else
+			if (first != v.first) {
+				first = tmp->GetNext();
+				v.first = temp;
+			}
+	}
+
+}
+
+
+
 
 
 template <class ValType>
@@ -149,7 +222,7 @@ TList<ValType>::TList(TList<ValType>& v) {
 
 template <class ValType>
 TList<ValType>::~TList() {
-	if(this->first != nullptr) {
+	if (this->first != nullptr) {
 		ListElem<ValType>* list1 = this->first;
 		ListElem<ValType>* list3 = nullptr;
 		while (list1 != nullptr) {
@@ -203,8 +276,9 @@ void TList<ValType>::InsFirst(ValType temp) {
 	ListElem<ValType>* tmp = new ListElem<ValType>(temp);
 	tmp->SetNext(first);
 	first = tmp;
+	if (last == 0)
+		last = tmp;
 	length++;
-	
 }
 
 template <class ValType>
@@ -221,14 +295,21 @@ template <class ValType>
 void TList<ValType>::DelLast() {
 	if (this->IsEmpty())
 		throw logic_error("Input error: invalide value of List length in DelLast");
-	ListElem<ValType>* list2 = last;
-	last = last->GetPrevious();
+	ListElem<ValType>* list2 = first;
+	if (list2->GetNext() != 0) {
+		while (list2->GetNext()->GetNext() != 0)
+			list2 = list2->GetNext();
+		delete list2->GetNext();
+		list2->SetNext(0);
+		return;
+	}
 	delete list2;
+	first = 0;
 	length--;
 }
 
 template<class ValType>
-void TList<ValType>::DelAfter(ListElem<ValType>* element){
+void TList<ValType>::DelAfter(ListElem<ValType>* element) {
 	element->GetPrevious()->SetNext(element->GetNext());
 	element->GetNext()->SetPrevious(element->GetPrevious());
 	delete element;
@@ -237,15 +318,19 @@ void TList<ValType>::DelAfter(ListElem<ValType>* element){
 
 template <class ValType>
 void TList<ValType>::InsLast(ValType temp) {
-	ListElem<ValType>* tmp = new ListElem<ValType>(temp);
-	tmp->SetPrevious(last);
-	last = tmp;
-	length++;
-	
+	if (this->IsEmpty()) InsFirst(temp);
+	else {
+		ListElem<ValType>* tmp = new ListElem<ValType>(temp);
+		if (!IsEmpty()) last->SetNext(tmp);
+		tmp->SetPrevious(last);
+		tmp->SetNext(nullptr);
+		last = tmp;
+		length++;
+	}
 }
 
 template<class ValType>
-inline void TList<ValType>::InsAfter(ListElem<ValType>* element, ValType temp){
+inline void TList<ValType>::InsAfter(ListElem<ValType>* element, ValType temp) {
 	ListElem<ValType>* tmp = new ListElem<ValType>(temp);
 	tmp->SetNext(element->GetNext());
 	tmp->SetPrevious(element);
@@ -255,29 +340,33 @@ inline void TList<ValType>::InsAfter(ListElem<ValType>* element, ValType temp){
 }
 
 template<class ValType>
-ListElem<ValType>* TList<ValType>::GetFirst(){
+ListElem<ValType>* TList<ValType>::GetFirst() {
+	if (this->IsEmpty())
+		throw logic_error("Input error: invalide value of List length in GetFirst");
 	return first;
 }
 
 template<class ValType>
-ListElem<ValType>* TList<ValType>::GetLast(){
+ListElem<ValType>* TList<ValType>::GetLast() {
+	if (this->IsEmpty())
+		throw logic_error("Input error: invalide value of List length in GetLast");
 	return last;
 }
 
 template <class ValType>
 bool TList<ValType>::IsEmpty(void) const {
-	return length == 0;
+	return (length == 0);
 }
 
 template <class ValType>
 bool TList<ValType>::IsFull(void) const {
 	try {
-		ListElem<ValType>* tmp = new ListElem<ValType>(0);
+		ListElem<ValType>* tmp = new ListElem<ValType>(nullptr);
 		tmp->SetPrevious(last);
 		delete tmp;
 		return false;
 	}
-	catch ("List Isfull"){
+	catch ("List Isfull") {
 		return true;
 	}
 }
@@ -307,4 +396,4 @@ istream& operator>>(istream& istr, TList<ValType1>& v) {
 
 
 
-#endif
+#endif   

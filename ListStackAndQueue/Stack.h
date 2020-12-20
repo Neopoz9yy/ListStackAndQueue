@@ -40,7 +40,7 @@ istream& operator>>(istream& istr, ClassStack<ValType1>& v) {
 
 template<class ValType>
 ClassStack<ValType>& ClassStack<ValType>::operator=(const ClassStack<ValType>& v) {
-	if (this = &v)
+	if (this == &v)
 		return *this;
 
 	this->list = v.list;

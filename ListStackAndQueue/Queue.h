@@ -14,7 +14,7 @@ public:
 	~ClassQueue();
 	ClassQueue<ValType>& operator = (const ClassQueue<ValType>& v);
 
-	void PushQueue(const ValType& elem);
+	void PushQueue(ValType elem);
 	ValType GetQueue();
 
 	bool IsEmpty();
@@ -38,15 +38,16 @@ istream& operator>>(istream& istr, ClassQueue<ValType1>& v) {
 
 template<class ValType>
 ClassQueue<ValType>& ClassQueue<ValType>::operator=(const ClassQueue<ValType>& v) {
-	if (this = &v)
+	if (this == &v)
 		return *this;
-
-	this->list = v.list;
-	return *this;
+	
+		this->list = v.list;
+		return *this;
+	
 }
 
 template<class ValType>
-void ClassQueue<ValType>::PushQueue(const ValType& elem) {
+void ClassQueue<ValType>::PushQueue(ValType elem) {
 	list.InsLast(elem);
 }
 
@@ -65,7 +66,7 @@ ClassQueue<ValType>::ClassQueue(){}
 
 template<class ValType>
 ClassQueue<ValType>::ClassQueue(const ClassQueue& v){
-	list = v.list;
+	this->list = v.list;
 }
 
 template<class ValType>
