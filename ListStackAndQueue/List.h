@@ -115,79 +115,8 @@ public:
 	friend ostream& operator<<(ostream& ostr, const TList<ValType1>& v);
 	template <class ValType1>
 	friend istream& operator>>(istream& istr, TList<ValType1>& v);
-	void DelDenominator(ValType p);
-	void together(TList<ValType>& v);
-	void part(TList<ValType>& v);
+	
 };
-template<class ValType>
-inline void TList<ValType>::DelDenominator(ValType p) {
-	ListElem<ValType>* temp = nullptr;
-	while (first != nullptr) {
-		temp = first->GetNext();
-		temp->SetPrevious(first);
-		if (temp->GetPrevious()->GetList() % p == 0) {
-			DelFirst();
-		}
-		else {
-			cout << *first << " ";
-			first = first->GetNext();
-		}
-
-	}
-}
-
-template<class ValType>
-inline void TList<ValType>::together(TList<ValType>& v) {
-	ListElem<ValType>* tmp = nullptr;
-	int temp = length + v.length;
-
-	for (int i = 0; i < length - 1; i++) {
-		tmp = first->GetNext();
-		tmp->SetPrevious(first);
-		tmp->GetPrevious()->GetList();
-		cout << *first << " ";
-		first = first->GetNext();
-	}
-
-	tmp = v.first;
-	tmp->SetPrevious(first);
-	tmp->GetPrevious()->GetList();
-	cout << *first << " ";
-	first = v.first;
-
-	for (int i = 0; i < v.length - 1; i++) {
-		tmp = v.first->GetNext();
-		tmp->SetPrevious(v.first);
-		tmp->GetPrevious()->GetList();
-		cout << *v.first << " ";
-		v.first = v.first->GetNext();
-	}
-	cout << *v.first << " ";
-}
-
-template<class ValType>
-void TList<ValType>::part(TList<ValType>& v) {
-	ListElem<ValType>* tmp = first;
-	ListElem<ValType>* temp = v.first;
-
-
-	tmp->SetNext(first->GetNext());
-
-	while (first != nullptr) {
-		while (first == v.first) {
-			first = first->GetNext();
-			v.first = v.first->GetNext();
-		}
-		if (v.first == nullptr)
-			cout << "yes";
-		else
-			if (first != v.first) {
-				first = tmp->GetNext();
-				v.first = temp;
-			}
-	}
-
-}
 
 
 
